@@ -71,6 +71,33 @@ class TestNiceMapper(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertIn("[PASS]", proc.stdout)
 
+    def test_framework_sources_in_cli_json(self) -> None:
+        expected_keys = {
+            "current_versions",
+            "components_json",
+            "components_xlsx",
+            "niccs_online",
+            "sp_800_181_r1",
+            "cprt_catalog",
+        }
+        self.assertEqual(set(nice_mapper.FRAMEWORK_SOURCES.keys()), expected_keys)
+        proc = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "nice_mapper.py"),
+                "--input",
+                str(ROOT / "samples" / "soc_triage_04.json"),
+                "--per-item",
+                "3",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        payload = json.loads(proc.stdout)
+        self.assertEqual(payload["framework_sources"], nice_mapper.FRAMEWORK_SOURCES)
+
 
 if __name__ == "__main__":
     unittest.main()

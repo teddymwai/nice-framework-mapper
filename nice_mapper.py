@@ -36,6 +36,15 @@ CATEGORY_NAMES = {
     "S": "Skill",
 }
 
+FRAMEWORK_SOURCES = {
+    "current_versions": "https://www.nist.gov/itl/applied-cybersecurity/nice/nice-framework-resource-center/nice-framework-current-versions",
+    "components_json": "https://csrc.nist.gov/csrc/media/Projects/cprt/documents/nice/v2-2-0_nf_components.json",
+    "components_xlsx": "https://www.nist.gov/document/nice-framework-components-v220",
+    "niccs_online": "https://niccs.cisa.gov/tools/nice-framework",
+    "sp_800_181_r1": "https://csrc.nist.gov/pubs/sp/800/181/r1/final",
+    "cprt_catalog": "https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/NICE_2_2_0/home",
+}
+
 
 def tokenize(text: str) -> list[str]:
     """Normalize and tokenize text into lowercase alphanumeric terms."""
@@ -287,6 +296,7 @@ def main() -> None:
     output_payload = {
         "source": label,
         "framework": "NIST SP 800-181 Rev 1 (NICE v2.2.0)",
+        "framework_sources": FRAMEWORK_SOURCES,
         "tks_pool_size": len(tks_rows),
         "results": results,
     }
