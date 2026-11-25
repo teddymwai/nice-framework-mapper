@@ -34,9 +34,12 @@ Whenever building, modifying, or styling user interfaces, dashboards, or web rep
 - Text truncation: `text-overflow: ellipsis; white-space: nowrap; overflow: hidden;`.
 - Absolute or right-calculated positioning for dropdown SVG chevrons to eliminate collision with long text.
 
-## 5. Self-Owned Design System: No External Attribution
-- The UI Mantra (unslop methodology, Apple HIG adaptation, palette, iconography) is an internal CYBER RANGES standard.
-- Never add external author handles, personal sites, third-party repository links, or `legacy/` vendored paths to docs, rules, READMEs, UI footers, or templates. Cite internal paths only (e.g. `docs/ui-mantra/03-ui-unslop-methodology.md`).
+## 5. Self-Owned Design System & Attribution Standard
+- The UI Mantra (unslop methodology, Apple HIG adaptation, palette, iconography) is an internal CYBER RANGES / TedCraft standard.
+- Never add third-party external author handles, third-party repository links, or `legacy/` vendored paths to docs, rules, READMEs, or templates. Cite internal paths only (e.g. `docs/ui-mantra/03-ui-unslop-methodology.md`).
+- **Canonical Footer Attribution & Author Links**: Rendered dashboards, walkthroughs, and web surfaces must include the standard attribution notice and Apple HIG capsule links (`min-height: 44px`, `border-radius: 9999px`, `:active { transform: scale(0.97); }`, inline SVG brand icons):
+  - Notice: `Copyright © 2026 Ted Mwai · TedCraft, a publication of Edulis Secure Systems Hub Limited`
+  - Author URLs: GitHub (`https://github.com/teddymwai`), LinkedIn (`https://www.linkedin.com/in/teddymwai/`), GitLab (`https://gitlab.com/teddymwai`).
 - Permitted: functional namespace URIs (`http://www.w3.org/2000/svg`, JSON Schema `$schema`) and runtime asset imports (Google Fonts Material Symbols stylesheet).
 - Third-party code retained under its own license (e.g. CC BY 4.0) keeps its license notice in place; never propagate that notice into internal docs. Prefer rewriting as an original internal artifact over vendoring.
 
@@ -48,9 +51,11 @@ Whenever building, modifying, or styling user interfaces, dashboards, or web rep
 - **Zero Theme-Selector Clutter**: Standardize strictly on Studio Curve (`img001.jpg`); omit redundant theme dropdowns from top navigation bars to preserve quiet chrome.
 - **Dual-Protocol Asset Resolution**: Local tool servers must stream `GET /backgrounds/<file>` with `file://` relative path fallback so dashboards render identically when opened offline from disk.
 
-## 7. Position-Aware Floating Tooltips (`TooltipManager`) & Header Ergonomics
-- **Floating Guidance (`TooltipManager`)**: Interactive buttons, filter pills, and safety toggles must provide position-aware tooltips (`data-tooltip="..."`, optional `data-shortcut="..."`) complying with WCAG 2.1 AA / 1.4.13:
-  - Dismissible via `<kbd>Escape</kbd>`, hoverable without disappearing, initialized off-screen (`top: -9999px; left: -9999px`), and clamped to viewport edges with automatic top/bottom flip.
+## 7. Position-Aware Auto-Hiding Floating Tooltips (`TooltipManager`) & Header Ergonomics
+- **Auto-Hiding Floating Guidance (`TooltipManager`)**: Interactive buttons, filter pills, capsule links, and safety toggles must provide position-aware tooltips (`data-tooltip="..."`, optional `data-shortcut="..."`) complying with WCAG 2.1 AA / 1.4.13:
+  - Hidden by default (`visibility: hidden; pointer-events: none; opacity: 0; top: -9999px; left: -9999px;`), never intercepting clicks when inactive.
+  - Auto-hides on `mouseout`/`focusout` (with a 120ms hover-bridge grace period), `pointerdown`, `scroll`, window `blur`, `<kbd>Escape</kbd>`, and an automatic inactivity timeout (`4000ms`), while remaining hoverable when active.
+  - Clamped to viewport edges with automatic top/bottom flip and `prefers-reduced-motion` support.
 - **Header Layout Invariant**:
   - **Far Left**: Brand vector icon aligned horizontally inline with the tool title (never stacked awkwardly above it).
   - **Far Right**: Active deployment badge, loopback bind pill (`127.0.0.1:<port>`), and live session status indicator.

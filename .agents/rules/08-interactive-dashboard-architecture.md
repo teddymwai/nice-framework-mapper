@@ -76,13 +76,13 @@ Every dashboard must ship with all seven interactive capabilities out of the box
 2. **Studio Curve (`img001.jpg`) Composite Canvas**:
    - Apply the standard dual-layer composite canvas (`linear-gradient(180deg, rgba(9, 13, 11, 0.86) 0%, rgba(9, 13, 11, 0.94) 100%)` over fixed `/backgrounds/img001.jpg` with `file://` relative path fallback) and frosted-glass cards (`backdrop-filter: blur(12px)`).
    - Never clutter the header with redundant theme-selector dropdowns.
-3. **Position-Aware `TooltipManager`**:
+3. **Position-Aware Auto-Hiding `TooltipManager`**:
    - Attach floating guidance tooltips (`data-tooltip="..."`, optional `data-shortcut="..."`) to interactive controls.
-   - Must comply with WCAG 2.1 AA (1.4.13): `<kbd>Escape</kbd>` dismissal, pointer hoverability, off-screen safe initialization (`top: -9999px; left: -9999px`), and viewport boundary clamping with dynamic top/bottom flip.
-4. **Header Alignment & CLI Quick-Reference Footer**:
+   - Must comply with WCAG 2.1 AA (1.4.13): hidden by default (`visibility: hidden; pointer-events: none; top: -9999px; left: -9999px`), `<kbd>Escape</kbd>` dismissal, pointer hoverability, auto-hide on `mouseout`/`focusout`/`pointerdown`/`scroll`/`blur` and inactivity timeout (`4000ms`), and viewport boundary clamping with dynamic top/bottom flip.
+4. **Header Alignment, CLI Quick-Reference & Attribution Footer**:
    - Left header: brand vector icon inline with tool title and subtitle badge.
    - Right header: active deployment pill, loopback lock indicator (`127.0.0.1:<port>`), and session state badge.
-   - Bottom footer: copy-pasteable CLI command equivalents dynamically reflecting the selected deployment and suites.
+   - Bottom footer: copy-pasteable CLI command equivalents dynamically reflecting the selected deployment and suites, paired with the canonical attribution (`Copyright © 2026 Ted Mwai · TedCraft, a publication of Edulis Secure Systems Hub Limited`) and Apple HIG capsule links (`min-height: 44px`, `border-radius: 9999px`) for GitHub (`https://github.com/teddymwai`), LinkedIn (`https://www.linkedin.com/in/teddymwai/`), and GitLab (`https://gitlab.com/teddymwai`).
 
 ---
 

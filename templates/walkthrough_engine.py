@@ -615,6 +615,46 @@ def render_walkthrough_html(doc: WalkthroughDocument) -> str:
     .walkthrough-grid {{ grid-template-columns: 1fr; }}
     .subject-pane-container {{ position: relative; top: 0; height: 480px; margin-bottom: 32px; }}
   }}
+
+  footer.attribution-footer {{
+    max-width: 1720px;
+    margin: 0 auto 32px auto;
+    padding: 16px 32px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--text2);
+  }}
+  .social-links {{ display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }}
+  a.hig-capsule-link {{
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 44px; min-width: 44px; padding: 0 16px;
+    border-radius: var(--radius-capsule);
+    border: 1px solid var(--line); background: var(--surface2);
+    color: var(--text2); font-size: 12px; font-weight: 600; text-decoration: none;
+    transition: transform 120ms cubic-bezier(0.2, 0, 0, 1), background 150ms ease, color 150ms ease, border-color 150ms ease;
+  }}
+  a.hig-capsule-link:hover {{ background: var(--surface3); color: var(--text); border-color: rgba(255,255,255,0.18); }}
+  a.hig-capsule-link:active {{ transform: scale(0.97); }}
+  a.hig-capsule-link:focus-visible {{ border-color: var(--brand-border); box-shadow: 0 0 0 1px var(--brand-border); outline: none; }}
+  a.hig-capsule-link svg {{ width: 16px; height: 16px; flex-shrink: 0; color: var(--text3); }}
+
+  #floating-tooltip {{
+    position: fixed; top: -9999px; left: -9999px; z-index: 9999; max-width: 280px;
+    padding: 8px 12px; border-radius: 8px;
+    background: rgba(14, 24, 19, 0.98); border: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--text); font-size: 12px;
+    visibility: hidden; pointer-events: none; opacity: 0;
+    transition: opacity 120ms cubic-bezier(0.2, 0, 0, 1), visibility 120ms ease;
+  }}
+  #floating-tooltip.visible {{ opacity: 1; visibility: visible; pointer-events: auto; }}
+  @media (prefers-reduced-motion: reduce) {{
+    .btn-capsule, a.hig-capsule-link, #floating-tooltip {{ transition: none; }}
+  }}
 </style>
 </head>
 <body>
@@ -629,8 +669,8 @@ def render_walkthrough_html(doc: WalkthroughDocument) -> str:
     <span id="stepper-label">Step 1 of {total_steps}</span>
   </div>
   <div style="display: flex; gap: 8px;">
-    <button class="btn-capsule secondary icon-only" id="btn-prev" title="Previous (k / ArrowUp)"><span class="material-symbols-outlined">arrow_upward</span></button>
-    <button class="btn-capsule icon-only" id="btn-next" title="Next (j / ArrowDown)"><span class="material-symbols-outlined">arrow_downward</span></button>
+    <button class="btn-capsule secondary icon-only" id="btn-prev" aria-label="Previous step" data-tooltip="Previous step" data-shortcut="k / ArrowUp"><span class="material-symbols-outlined">arrow_upward</span></button>
+    <button class="btn-capsule icon-only" id="btn-next" aria-label="Next step" data-tooltip="Next step" data-shortcut="j / ArrowDown"><span class="material-symbols-outlined">arrow_downward</span></button>
   </div>
   <div class="progress-track"><div class="progress-fill" id="progress-bar"></div></div>
 </header>
@@ -641,12 +681,32 @@ def render_walkthrough_html(doc: WalkthroughDocument) -> str:
     <div class="subject-pane">
       <div class="subject-toolbar">
         <span class="subject-title" id="subject-title">{html.escape(initial_subject.title if initial_subject else "Context")}</span>
-        <button class="btn-capsule secondary" id="btn-copy" style="height: 32px; padding: 0 12px; font-size: 11px;">Copy</button>
+        <button class="btn-capsule secondary" id="btn-copy" data-tooltip="Copy current subject source to clipboard" style="height: 32px; padding: 0 12px; font-size: 11px;">Copy</button>
       </div>
       <div class="code-viewport" id="code-viewport">{rendered_code_block}</div>
     </div>
   </aside>
 </main>
+
+<footer class="attribution-footer">
+  <span>Copyright &copy; 2026 Ted Mwai &middot; TedCraft, a publication of Edulis Secure Systems Hub Limited</span>
+  <nav class="social-links" aria-label="Author links">
+    <a class="hig-capsule-link" href="https://github.com/teddymwai" target="_blank" rel="noopener noreferrer" aria-label="Ted Mwai on GitHub" data-tooltip="Ted Mwai on GitHub">
+      <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      <span>GitHub</span>
+    </a>
+    <a class="hig-capsule-link" href="https://www.linkedin.com/in/teddymwai/" target="_blank" rel="noopener noreferrer" aria-label="Ted Mwai on LinkedIn" data-tooltip="Ted Mwai on LinkedIn">
+      <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76c.92 0 1.66-.74 1.66-1.66 0-.91-.74-1.65-1.66-1.65-.92 0-1.66.74-1.66 1.65 0 .92.74 1.66 1.66 1.66m1.39 9.74v-8.37H5.07v8.37h2.78z"/></svg>
+      <span>LinkedIn</span>
+    </a>
+    <a class="hig-capsule-link" href="https://gitlab.com/teddymwai" target="_blank" rel="noopener noreferrer" aria-label="Ted Mwai on GitLab" data-tooltip="Ted Mwai on GitLab">
+      <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="m22.68 10.05-1.12-3.46a1.36 1.36 0 0 0-2.58-.08l-1.9 5.84H6.92l-1.9-5.84a1.36 1.36 0 0 0-2.58.08L1.32 10.05a1.88 1.88 0 0 0 .68 2.1l9.64 7a.75.75 0 0 0 .88 0l9.64-7a1.88 1.88 0 0 0 .52-2.1z"/></svg>
+      <span>GitLab</span>
+    </a>
+  </nav>
+</footer>
+
+<div id="floating-tooltip" role="tooltip"></div>
 
 <script>
 (function() {{
@@ -761,6 +821,60 @@ def render_walkthrough_html(doc: WalkthroughDocument) -> str:
       setTimeout(() => {{ btnCopy.textContent = "Copy"; }}, 1600);
     }});
   }});
+
+  class TooltipManager {{
+    constructor(autoHideMs = 4000) {{
+      this.el = document.getElementById("floating-tooltip");
+      this.autoHideMs = autoHideMs;
+      this.hideTimer = null;
+      this.autoHideTimer = null;
+      document.addEventListener("mouseover", (e) => {{
+        const t = e.target.closest("[data-tooltip]");
+        if (t) {{ this.cancelScheduledHide(); this.show(t); }}
+      }});
+      document.addEventListener("mouseout", (e) => {{
+        const t = e.target.closest("[data-tooltip]");
+        if (t && !this.el.contains(e.relatedTarget)) this.scheduleHide(120);
+      }});
+      document.addEventListener("focusin", (e) => {{
+        const t = e.target.closest("[data-tooltip]");
+        if (t) this.show(t);
+      }});
+      document.addEventListener("focusout", () => this.hide());
+      this.el.addEventListener("mouseenter", () => {{ this.cancelScheduledHide(); this.resetAutoHide(); }});
+      this.el.addEventListener("mouseleave", () => this.scheduleHide(120));
+      document.addEventListener("pointerdown", () => this.hide());
+      document.addEventListener("scroll", () => this.hide(), true);
+      window.addEventListener("blur", () => this.hide());
+      document.addEventListener("keydown", (e) => {{ if (e.key === "Escape") this.hide(); }});
+    }}
+    cancelScheduledHide() {{ if (this.hideTimer) {{ clearTimeout(this.hideTimer); this.hideTimer = null; }} }}
+    scheduleHide(ms = 120) {{ this.cancelScheduledHide(); this.hideTimer = setTimeout(() => this.hide(), ms); }}
+    resetAutoHide() {{ if (this.autoHideTimer) clearTimeout(this.autoHideTimer); this.autoHideTimer = setTimeout(() => this.hide(), this.autoHideMs); }}
+    show(target) {{
+      const text = target.getAttribute("data-tooltip") || "";
+      if (!text) return;
+      const shortcut = target.getAttribute("data-shortcut");
+      this.el.textContent = shortcut ? `${{text}} (${{shortcut}})` : text;
+      this.el.classList.add("visible");
+      const rect = target.getBoundingClientRect();
+      const tipRect = this.el.getBoundingClientRect();
+      let top = rect.top - tipRect.height - 8;
+      if (top < 8) top = rect.bottom + 8;
+      const left = Math.max(8, Math.min(rect.left, window.innerWidth - tipRect.width - 8));
+      this.el.style.top = top + "px";
+      this.el.style.left = left + "px";
+      this.resetAutoHide();
+    }}
+    hide() {{
+      this.cancelScheduledHide();
+      if (this.autoHideTimer) {{ clearTimeout(this.autoHideTimer); this.autoHideTimer = null; }}
+      this.el.classList.remove("visible");
+      this.el.style.top = "-9999px";
+      this.el.style.left = "-9999px";
+    }}
+  }}
+  new TooltipManager();
 }})();
 </script>
 </body>
