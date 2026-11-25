@@ -16,6 +16,19 @@ This repository provides both:
 
 ---
 
+## NIST NICE v2.2.0 Reference Sources
+
+`data/nice_tks_v2_2_0.json` normalizes 2,211 Task, Knowledge, and Skill statements from the official NIST NICE Framework v2.2.0 (`v2-2-0_nf_components.json`):
+
+- **NICE Framework Current Versions**: https://www.nist.gov/itl/applied-cybersecurity/nice/nice-framework-resource-center/nice-framework-current-versions
+- **Components JSON (v2.2.0)**: https://csrc.nist.gov/csrc/media/Projects/cprt/documents/nice/v2-2-0_nf_components.json
+- **Components XLSX (v2.2.0)**: https://www.nist.gov/document/nice-framework-components-v220
+- **NICCS Online Framework**: https://niccs.cisa.gov/tools/nice-framework
+- **NIST SP 800-181 Rev 1 Publication**: https://csrc.nist.gov/pubs/sp/800/181/r1/final
+- **NIST CPRT Catalog (NICE v2.2.0)**: https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/NICE_2_2_0/home
+
+---
+
 ## Architecture
 
 ```text

@@ -9,6 +9,22 @@ All notable architectural enhancements, security invariants, interactive dashboa
 
 ---
 
+## [v1.3.1 — 2026-11-25] Lagopus Islandorum (NIST NICE v2.2.0 Live Sources & Provenance)
+
+| Field | Value |
+| :--- | :--- |
+| **Taxonomic Identifier** | `LagopusIslandorum_v1.3.1` |
+| **Stage / Branch** | `Release` (`feat/nist-nice-sources` -> `main`) |
+| **Primary Subsystems** | Browser TKS Mapper (`index.html`), CLI Mapper (`nice_mapper.py`), Unit Tests (`tests/test_nice_mapper.py`), Documentation (`README.md`) |
+| **Validation Status** | `python3 -m compileall -q .` passed; `python3 nice_mapper.py --selftest` passed; `python3 -m unittest discover -s tests -v` passed (6/6); TedRedCraft Tier 1 pre-commit SAST passed (`0 surface finding(s), 0 canonical root cause(s)`). |
+
+### Architectural Updates
+- **Live NIST NICE v2.2.0 Sources Panel (`index.html`)**: Added a dedicated `NIST NICE v2.2.0 Sources` panel in the left rail linking to NIST NICE Current Versions, CPRT `v2-2-0_nf_components.json`, NICE Components XLSX, CISA NICCS Online Framework, NIST SP 800-181 Rev 1, and NIST CPRT Interactive Catalog, plus a 1-line data provenance note (`2,211 TKS statements normalized from v2-2-0_nf_components.json.`).
+- **CLI Provenance Metadata (`nice_mapper.py`)**: Added `FRAMEWORK_SOURCES` and emitted `framework_sources` in JSON output payloads, backed by `test_framework_sources_in_cli_json` in `tests/test_nice_mapper.py`.
+- **Documentation (`README.md`)**: Added a `NIST NICE v2.2.0 Reference Sources` section mirroring the canonical framework URLs and data provenance.
+
+---
+
 ## [v1.3.0 — 2026-11-25] Lagopus Islandorum (Core Harness Alignment, DOM XSS Remediation & Test Suite)
 
 | Field | Value |
