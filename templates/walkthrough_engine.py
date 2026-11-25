@@ -492,27 +492,54 @@ def render_walkthrough_html(doc: WalkthroughDocument) -> str:
 <meta charset="utf-8">
 <title>{html.escape(doc.title)} — Interactive Walkthrough</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<meta name="color-scheme" content="dark light">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128' fill='none'%3E%3Cpath fill='%23d4a853' d='M 103 8 C 98 18 97.5 28 100.5 42 C 103.5 64 92.5 86 71.5 98 C 65.5 90 61.5 82 59.5 74 C 62.5 52 71.8 30 86 16 C 92 10 98 8 103 8 Z'/%3E%3Cpolygon fill='%23d4a853' points='44,88.5 58.2,96.7 58.2,113.3 44,121.5 29.8,113.3 29.8,96.7'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <style>
   :root {{
-    --bg: #090d0b;
-    --bg2: #0d1310;
-    --surface: rgba(21, 31, 26, 0.88);
-    --surface2: rgba(26, 38, 32, 0.88);
-    --surface3: rgba(34, 51, 42, 0.90);
-    --line: rgba(255, 255, 255, 0.08);
-    --brand: #0e3f2a;
-    --brand-active: #1b5e3f;
-    --brand-border: #2e7d56;
-    --text: #f0f6f2;
-    --text2: #9bb1a4;
-    --text3: #6c8577;
-    --ok: #2ea043;
+    color-scheme: dark light;
+    --bg: #0c0c0e;
+    --bg2: #09090b;
+    --surface: rgba(21, 21, 24, 0.86);
+    --surface2: #1f1f23;
+    --surface3: #28282d;
+    --line: rgba(239, 233, 222, 0.08);
+    --brand: #d4a853;
+    --brand-active: #e2bc6b;
+    --brand-border: rgba(212, 168, 83, 0.35);
+    --brand-fg: #0c0c0e;
+    --text: #efe9de;
+    --text2: #aaa398;
+    --text3: #8a847a;
+    --ok: #4cc38a;
     --warn: #d29922;
-    --err: #f85149;
-    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --err: #e5484d;
+    --font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
+    --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     --radius-capsule: 9999px;
     --radius-card: 12px;
+  }}
+  @media (prefers-color-scheme: light) {{
+    :root {{
+      --bg: #f8f6f1;
+      --bg2: #efe9df;
+      --surface: rgba(253, 251, 247, 0.88);
+      --surface2: #f3efe6;
+      --surface3: #e7e1d5;
+      --line: rgba(31, 27, 22, 0.09);
+      --brand: #8c6218;
+      --brand-active: #6e4c10;
+      --brand-border: rgba(140, 98, 24, 0.32);
+      --brand-fg: #fdfbf7;
+      --text: #1f1b16;
+      --text2: #5e554a;
+      --text3: #7b7266;
+      --ok: #16a34a;
+      --err: #dc2626;
+    }}
   }}
 
   * {{ box-sizing: border-box; margin: 0; padding: 0; }}
@@ -520,7 +547,7 @@ def render_walkthrough_html(doc: WalkthroughDocument) -> str:
   body {{
     background-color: var(--bg);
     color: var(--text);
-    font: 14px/22px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font: 14px/22px var(--font-sans);
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }}
@@ -533,14 +560,14 @@ def render_walkthrough_html(doc: WalkthroughDocument) -> str:
     align-items: center;
     justify-content: space-between;
     padding: 12px 32px;
-    background: rgba(9, 13, 11, 0.94);
+    background: var(--surface);
     border-bottom: 1px solid var(--line);
     backdrop-filter: blur(16px);
   }}
 
   .header-title-block {{ display: flex; flex-direction: column; }}
-  .header-title {{ font-size: 15px; font-weight: 700; color: var(--text); }}
-  .header-subtext {{ font-size: 11px; color: var(--text2); }}
+  .header-title {{ font-family: var(--font-display); font-size: 18px; font-weight: 500; letter-spacing: -0.025em; color: var(--text); }}
+  .header-subtext {{ font-size: 11px; color: var(--text2); font-family: var(--mono); }}
 
   .stepper-pill {{
     display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px;
@@ -551,7 +578,7 @@ def render_walkthrough_html(doc: WalkthroughDocument) -> str:
   .btn-capsule {{
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     height: 44px; min-height: 44px; padding: 0 18px; border-radius: var(--radius-capsule);
-    border: 1px solid var(--brand-border); background: var(--brand); color: var(--text);
+    border: 1px solid var(--brand-border); background: var(--brand); color: var(--brand-fg);
     font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none;
     transition: transform 120ms cubic-bezier(0.2, 0, 0, 1), background 150ms ease; user-select: none;
   }}
@@ -574,8 +601,8 @@ def render_walkthrough_html(doc: WalkthroughDocument) -> str:
     padding: 28px; margin-bottom: 32px; transition: border-color 200ms ease, box-shadow 200ms ease; cursor: pointer;
   }}
   .step-card.is-active {{
-    border-color: var(--brand-border); background: rgba(21, 31, 26, 0.98);
-    box-shadow: 0 8px 32px rgba(14, 63, 42, 0.35);
+    border-color: var(--brand-border); background: var(--surface2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
   }}
 
   .step-card-header {{ display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }}
@@ -584,16 +611,16 @@ def render_walkthrough_html(doc: WalkthroughDocument) -> str:
     font-size: 11px; font-weight: 700; color: var(--text); text-transform: uppercase;
   }}
   .step-badge {{
-    padding: 2px 8px; border-radius: var(--radius-capsule); background: rgba(14, 63, 42, 0.4);
-    border: 1px solid rgba(46, 125, 86, 0.6); font-size: 11px; font-weight: 700; color: var(--text);
+    padding: 2px 8px; border-radius: var(--radius-capsule); background: rgba(212, 168, 83, 0.14);
+    border: 1px solid var(--brand-border); font-size: 11px; font-weight: 600; color: var(--brand);
   }}
-  .step-title {{ font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 14px; }}
+  .step-title {{ font-family: var(--font-display); font-size: 19px; font-weight: 500; letter-spacing: -0.02em; color: var(--text); margin-bottom: 14px; }}
   .step-body {{ color: var(--text2); font-size: 14px; line-height: 22px; }}
-  .inline-code {{ font-family: var(--mono); font-size: 12px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.06); color: #e6edf3; }}
+  .inline-code {{ font-family: var(--mono); font-size: 12px; padding: 2px 6px; border-radius: 4px; background: var(--surface2); color: var(--text); }}
 
   .callout {{ display: flex; gap: 12px; padding: 12px 16px; border-radius: 8px; margin: 14px 0; font-size: 13px; line-height: 19px; }}
-  .callout-tip {{ background: rgba(46, 125, 86, 0.15); border: 1px solid rgba(46, 125, 86, 0.4); color: #f0f6f2; }}
-  .callout-note {{ background: rgba(56, 139, 253, 0.12); border: 1px solid rgba(56, 139, 253, 0.35); color: #f0f6f2; }}
+  .callout-tip {{ background: rgba(212, 168, 83, 0.10); border: 1px solid var(--brand-border); color: var(--text); }}
+  .callout-note {{ background: rgba(56, 139, 253, 0.12); border: 1px solid rgba(56, 139, 253, 0.35); color: var(--text); }}
 
   .status-pill {{ padding: 2px 8px; border-radius: var(--radius-capsule); font-size: 11px; font-weight: 700; }}
   .status-pill.status-pass {{ background: rgba(46, 160, 67, 0.2); color: var(--ok); border: 1px solid rgba(46, 160, 67, 0.4); }}
@@ -660,9 +687,14 @@ def render_walkthrough_html(doc: WalkthroughDocument) -> str:
 <body>
 
 <header class="walkthrough-header">
-  <div class="header-title-block">
-    <h1 class="header-title">{html.escape(doc.title)}</h1>
-    <span class="header-subtext">{doc.deployment.upper()} &bull; Verdict: {doc.verdict_status}</span>
+  <div style="display: flex; align-items: center; gap: 12px;">
+    <svg aria-hidden="true" viewBox="0 0 128 128" fill="none" style="width: 24px; height: 24px; color: var(--brand); flex-shrink: 0; pointer-events: none;">
+      <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M 99.4 11.2 C 101.0 10.8 102.0 12.0 101.1 13.5 C 96.6 19.2 95.4 26.2 96.6 36.0 C 98.2 49.1 92.5 74.5 76.8 89.8 C 66.8 99.5 53.5 115.0 36.5 115.0 C 22.5 115.0 16.0 101.5 16.0 83.0 C 16.0 69.5 24.5 63.0 36.5 63.0 C 46.5 63.0 49.5 71.0 49.5 80.5 C 49.5 85.2 46.2 88.5 42.0 88.5 C 37.8 88.5 35.5 84.5 35.5 79.5 C 35.5 75.8 33.4 73.8 30.5 73.8 C 27.0 73.8 25.0 79.5 25.5 87.5 C 26.0 97.5 32.5 104.2 40.5 104.2 C 50.5 104.2 57.5 99.5 58.2 89.5 C 59.6 69.5 64.8 46.5 76.5 28.5 C 83.0 18.5 92.2 13.0 99.4 11.2 Z M 87.8 27.0 C 82.8 38.2 77.8 49.6 74.4 59.8 C 78.8 56.2 83.5 52.6 88.0 49.8 C 83.8 54.0 78.5 59.0 73.1 64.0 C 72.1 68.5 71.3 73.0 70.87 77.09 L 73.23 79.48 L 71.86 84.49 L 66.83 85.82 L 63.17 82.12 L 64.54 77.11 L 67.78 76.25 C 70.6 60.2 78.0 42.4 87.8 27.0 Z"/>
+    </svg>
+    <div class="header-title-block">
+      <h1 class="header-title">{html.escape(doc.title)}</h1>
+      <span class="header-subtext">{doc.deployment.upper()} &bull; Verdict: {doc.verdict_status}</span>
+    </div>
   </div>
   <div class="stepper-pill">
     <span class="material-symbols-outlined" style="font-size: 16px; color: var(--text2);">view_timeline</span>
