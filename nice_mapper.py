@@ -228,11 +228,40 @@ def export_csv(results: list[dict[str, Any]], out_path: Path) -> None:
                 )
 
 
+def run_selftest(data_path: Path = DEFAULT_DATA_PATH) -> int:
+    """Run offline self-tests verifying TKS dictionary, tokenizer, and deterministic mapping."""
+    if not data_path.exists():
+        print(f"[FAIL] Missing TKS dictionary at {data_path}")
+        return 1
+
+    tks_rows = json.loads(data_path.read_text(encoding="utf-8"))
+    if len(tks_rows) != 2211:
+        print(f"[FAIL] Expected 2211 TKS statements, got {len(tks_rows)}")
+        return 1
+
+    tokens = tokenize("Identify lateral-movement and C2 beacon via SIEM")
+    if "lateral-movement" not in tokens or "lateral" not in tokens or "siem" not in tokens:
+        print(f"[FAIL] Unexpected tokenizer output: {tokens}")
+        return 1
+
+    mapper = NiceTksMapper(tks_rows)
+    results = mapper.map_items(
+        ["Investigate SIEM alerts for lateral movement and isolate compromised host"],
+        per_item=3,
+    )
+    if len(results) != 1 or len(results[0]["matches"]) != 3:
+        print(f"[FAIL] Expected 3 matches for selftest item, got {results}")
+        return 1
+
+    print(f"[PASS] nice_mapper selftest passed (tks_pool={len(tks_rows)}, matches=3)")
+    return 0
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Map scenario telemetry or assessment questions to NIST NICE TKS statements."
     )
-    parser.add_argument("--input", required=True, type=Path, help="Path to .json or .csv input")
+    parser.add_argument("--input", type=Path, default=None, help="Path to .json or .csv input")
     parser.add_argument(
         "--data", type=Path, default=DEFAULT_DATA_PATH, help="Path to TKS JSON dictionary"
     )
@@ -240,7 +269,15 @@ def main() -> None:
     parser.add_argument(
         "--output", type=Path, default=None, help="Optional output path (.json or .csv)"
     )
+    parser.add_argument(
+        "--selftest", action="store_true", help="Run offline deterministic self-test and exit"
+    )
     args = parser.parse_args()
+
+    if args.selftest:
+        raise SystemExit(run_selftest(args.data))
+    if args.input is None:
+        parser.error("--input is required unless --selftest is specified")
 
     tks_rows = json.loads(args.data.read_text(encoding="utf-8"))
     mapper = NiceTksMapper(tks_rows)

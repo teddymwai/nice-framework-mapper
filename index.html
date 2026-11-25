@@ -427,11 +427,34 @@ function wireEvents(){
   document.getElementById('templateBtn').addEventListener('click', downloadTemplate);
 }
 
-function setUploadStatus(html, cls){
-  document.getElementById('uploadStatus').innerHTML = html ? `<div class="status ${cls}">${html}</div>` : '';
+function clearEl(el){
+  while (el.firstChild) el.removeChild(el.firstChild);
 }
-function setRunStatus(html, cls){
-  document.getElementById('runStatus').innerHTML = html ? `<div class="status ${cls}">${html}</div>` : '';
+
+function makeEl(tag, className, text){
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined && text !== null) node.textContent = String(text);
+  return node;
+}
+
+function setStatusBox(id, message, cls, boldSuffix){
+  const host = document.getElementById(id);
+  clearEl(host);
+  if (!message) return;
+  const box = makeEl('div', `status ${cls}`, message);
+  if (boldSuffix){
+    box.appendChild(makeEl('strong', '', boldSuffix));
+    box.appendChild(document.createTextNode('.'));
+  }
+  host.appendChild(box);
+}
+
+function setUploadStatus(message, cls, boldSuffix){
+  setStatusBox('uploadStatus', message, cls, boldSuffix);
+}
+function setRunStatus(message, cls){
+  setStatusBox('runStatus', message, cls);
 }
 
 function handleFile(file){
@@ -487,21 +510,27 @@ function processRows(rows){
     return;
   }
   uploadedQuestions = questions;
-  setUploadStatus(`Loaded ${questions.length} question${questions.length===1?'':'s'} from <strong>${uploadedFileName}</strong>.`, 'ok');
+  setUploadStatus(`Loaded ${questions.length} question${questions.length===1?'':'s'} from `, 'ok', uploadedFileName);
   document.getElementById('runBtn').disabled = false;
   renderFileRow();
 }
 
 function renderFileRow(){
   const holder = document.getElementById('fileRowHolder');
-  if (!uploadedFileName){ holder.innerHTML=''; return; }
-  holder.innerHTML = `<div class="filerow"><span>${uploadedFileName}</span><span class="x" id="clearFile">&#10005;</span></div>`;
-  document.getElementById('clearFile').addEventListener('click', ()=>{
+  clearEl(holder);
+  if (!uploadedFileName) return;
+  const row = makeEl('div', 'filerow');
+  row.appendChild(makeEl('span', '', uploadedFileName));
+  const clearBtn = makeEl('span', 'x', '\u2715');
+  clearBtn.id = 'clearFile';
+  clearBtn.addEventListener('click', ()=>{
     uploadedQuestions = null; uploadedFileName='';
     document.getElementById('runBtn').disabled = true;
     setUploadStatus('', '');
     renderFileRow();
   });
+  row.appendChild(clearBtn);
+  holder.appendChild(row);
 }
 
 function downloadTemplate(){
@@ -513,10 +542,18 @@ function downloadTemplate(){
   a.click();
 }
 
+function makeLoader(text){
+  const loader = makeEl('div', 'loader');
+  loader.appendChild(makeEl('div', 'spin'));
+  loader.appendChild(document.createTextNode(' ' + text));
+  return loader;
+}
+
 function runMapping(){
   if (!uploadedQuestions) return;
   const perQ = parseInt(document.getElementById('perQSlider').value, 10);
-  document.getElementById('resultsArea').innerHTML = `<div class="loader"><div class="spin"></div> Scoring ${uploadedQuestions.length} question(s) against 2,211 TKS statements…</div>`;
+  const resultsArea = document.getElementById('resultsArea');
+  resultsArea.replaceChildren(makeLoader(`Scoring ${uploadedQuestions.length} question(s) against 2,211 TKS statements\u2026`));
   setRunStatus('', '');
   setTimeout(()=>{
     const {results, usage} = assign(uploadedQuestions, perQ);
@@ -534,49 +571,66 @@ function renderResults(results, usage, perQ){
   const catCounts = {T:0,S:0,K:0};
   results.forEach(r=> r.picks.forEach(p=> catCounts[TKS[p.i][1]]++));
 
-  let html = `
-  <div class="stat-strip">
-    <div class="stat"><div class="n">${results.length}</div><div class="l">questions mapped</div></div>
-    <div class="stat"><div class="n">${total}</div><div class="l">total TKS assigned</div></div>
-    <div class="stat"><div class="n">${uniqueUsed}</div><div class="l">unique statements used</div></div>
-    <div class="stat"><div class="n">${weakCount}</div><div class="l">weak-match pairs (review)</div></div>
-  </div>
-  <div class="toolbar">
-    <div class="title">Question &rarr; TKS alignment</div>
-    <div class="actions">
-      <button class="btn btn-ghost" id="exportCsv">Export CSV</button>
-      <button class="btn btn-ghost" id="exportXlsx">Export XLSX</button>
-    </div>
-  </div>
-  `;
+  const frag = document.createDocumentFragment();
+
+  const statStrip = makeEl('div', 'stat-strip');
+  [
+    [results.length, 'questions mapped'],
+    [total, 'total TKS assigned'],
+    [uniqueUsed, 'unique statements used'],
+    [weakCount, 'weak-match pairs (review)']
+  ].forEach(([num, label]) => {
+    const stat = makeEl('div', 'stat');
+    stat.appendChild(makeEl('div', 'n', num));
+    stat.appendChild(makeEl('div', 'l', label));
+    statStrip.appendChild(stat);
+  });
+  frag.appendChild(statStrip);
+
+  const toolbar = makeEl('div', 'toolbar');
+  toolbar.appendChild(makeEl('div', 'title', 'Question \u2192 TKS alignment'));
+  const actions = makeEl('div', 'actions');
+  const exportCsvBtn = makeEl('button', 'btn btn-ghost', 'Export CSV');
+  exportCsvBtn.id = 'exportCsv';
+  exportCsvBtn.addEventListener('click', ()=>exportResults('csv'));
+  const exportXlsxBtn = makeEl('button', 'btn btn-ghost', 'Export XLSX');
+  exportXlsxBtn.id = 'exportXlsx';
+  exportXlsxBtn.addEventListener('click', ()=>exportResults('xlsx'));
+  actions.append(exportCsvBtn, exportXlsxBtn);
+  toolbar.appendChild(actions);
+  frag.appendChild(toolbar);
 
   results.forEach((r, qi) => {
-    const warn = r.picks.length < 2 ? `<div class="warn">&#9888; Only ${r.picks.length} statement(s) could be assigned — TKS pool may be near capacity.</div>` : '';
-    html += `<div class="qcard">
-      <div class="qhead">
-        <span class="qnum">Q${qi+1}</span>
-        <span class="qtext">${escapeHtml(r.question)}</span>
-      </div>
-      ${warn}
-      <div class="tks-list">
-        ${r.picks.map(p => {
-          const row = TKS[p.i];
-          const dupFlag = usage[p.i] >= 2 ? '<span class="reused-flag">2/2 USED</span>' : '';
-          const lbl = scoreLabel(p.s);
-          return `<div class="tks-item">
-            <div class="badge ${row[1]}">${row[1]}</div>
-            <div class="id">${row[0]}</div>
-            <div class="txt">${escapeHtml(row[2])}${dupFlag}</div>
-            <div class="score ${lbl}">${lbl}</div>
-          </div>`;
-        }).join('')}
-      </div>
-    </div>`;
+    const qcard = makeEl('div', 'qcard');
+    const qhead = makeEl('div', 'qhead');
+    qhead.appendChild(makeEl('span', 'qnum', `Q${qi+1}`));
+    qhead.appendChild(makeEl('span', 'qtext', r.question));
+    qcard.appendChild(qhead);
+
+    if (r.picks.length < 2){
+      qcard.appendChild(makeEl('div', 'warn', `\u26A0 Only ${r.picks.length} statement(s) could be assigned \u2014 TKS pool may be near capacity.`));
+    }
+
+    const tksList = makeEl('div', 'tks-list');
+    r.picks.forEach(p => {
+      const row = TKS[p.i];
+      const lbl = scoreLabel(p.s);
+      const item = makeEl('div', 'tks-item');
+      item.appendChild(makeEl('div', `badge ${row[1]}`, row[1]));
+      item.appendChild(makeEl('div', 'id', row[0]));
+      const txt = makeEl('div', 'txt', row[2]);
+      if (usage[p.i] >= 2){
+        txt.appendChild(makeEl('span', 'reused-flag', '2/2 USED'));
+      }
+      item.appendChild(txt);
+      item.appendChild(makeEl('div', `score ${lbl}`, lbl));
+      tksList.appendChild(item);
+    });
+    qcard.appendChild(tksList);
+    frag.appendChild(qcard);
   });
 
-  document.getElementById('resultsArea').innerHTML = html;
-  document.getElementById('exportCsv').addEventListener('click', ()=>exportResults('csv'));
-  document.getElementById('exportXlsx').addEventListener('click', ()=>exportResults('xlsx'));
+  document.getElementById('resultsArea').replaceChildren(frag);
 
   // ledger
   const ledgerPanel = document.getElementById('ledgerPanel');
@@ -585,14 +639,23 @@ function renderResults(results, usage, perQ){
   TKS.forEach(row => catTotals[row[1]]++);
   const catUsed = {T:0,S:0,K:0};
   usage.forEach((u,i)=>{ if(u>0) catUsed[TKS[i][1]]++; });
-  document.getElementById('ledgerBody').innerHTML = ['T','S','K'].map(c => {
+  const ledgerFrag = document.createDocumentFragment();
+  ['T','S','K'].forEach(c => {
     const pct = Math.round(100*catUsed[c]/catTotals[c]);
-    return `<div class="ledger-row">
-      <div class="cat">${CAT_NAME[c]}</div>
-      <div class="ledger-bar"><div style="width:${pct}%"></div></div>
-      <div class="num">${catUsed[c]} / ${catTotals[c]}</div>
-    </div>`;
-  }).join('') + `<div style="margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--ink-dim);">${atCap} statement(s) now at the 2-question cap.</div>`;
+    const lrow = makeEl('div', 'ledger-row');
+    lrow.appendChild(makeEl('div', 'cat', CAT_NAME[c]));
+    const bar = makeEl('div', 'ledger-bar');
+    const fill = document.createElement('div');
+    fill.style.width = `${pct}%`;
+    bar.appendChild(fill);
+    lrow.appendChild(bar);
+    lrow.appendChild(makeEl('div', 'num', `${catUsed[c]} / ${catTotals[c]}`));
+    ledgerFrag.appendChild(lrow);
+  });
+  const capNote = makeEl('div', '', `${atCap} statement(s) now at the 2-question cap.`);
+  capNote.style.cssText = 'margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--ink-dim);';
+  ledgerFrag.appendChild(capNote);
+  document.getElementById('ledgerBody').replaceChildren(ledgerFrag);
 }
 
 function escapeHtml(s){
@@ -627,7 +690,7 @@ function exportResults(kind){
 }
 
 // ---- boot ----
-root.innerHTML = `<div class="loader"><div class="spin"></div> Building TF-IDF index over 2,211 TKS statements…</div>`;
+root.replaceChildren(makeLoader('Building TF-IDF index over 2,211 TKS statements\u2026'));
 setTimeout(()=>{
   buildIndex();
   render();

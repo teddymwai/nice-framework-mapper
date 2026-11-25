@@ -1,0 +1,8 @@
+# TedRedCraft Target Configuration
+profile = "cyberranges-cockpit"
+default_branch = "main"
+
+[gates]
+tier1_pre_commit = true
+tier2_pre_push = true
+max_remediation_strikes = 3

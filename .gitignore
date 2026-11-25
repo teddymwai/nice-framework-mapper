@@ -3,3 +3,11 @@ __pycache__/
 .DS_Store
 .venv/
 mapped_results.*
+
+# Antigravity Output Telemetry
+output/
+reports/
+.redcraft/
+*.session_cache.json
+*.har
+.redcraft/blackboard.db*

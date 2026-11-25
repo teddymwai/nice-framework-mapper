@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AutonomousRunVerdict",
+  "type": "object",
+  "required": [
+    "version",
+    "suite",
+    "deployment",
+    "run_id",
+    "status",
+    "duration_seconds",
+    "summary"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "enum": ["1.0.0"]
+    },
+    "suite": {
+      "type": "string",
+      "description": "Identifier or code of the executed suite or task"
+    },
+    "deployment": {
+      "type": "string",
+      "enum": ["local", "staging", "prod", "lab"]
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{6}_.+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "BLOCKED", "SKIPPED"]
+    },
+    "duration_seconds": {
+      "type": "number"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "status"],
+        "properties": {
+          "name": {"type": "string"},
+          "status": {"type": "string", "enum": ["PASS", "FAIL", "SKIPPED"]},
+          "detail": {"type": "string"}
+        }
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "properties": {
+        "redaction_applied": {"type": "boolean"},
+        "screenshots_count": {"type": "integer"},
+        "wire_requests_count": {"type": "integer"}
+      }
+    }
+  }
+}

@@ -46,6 +46,26 @@ python3 nice_mapper.py --input samples/soc_triage_04.json --per-item 3
 
 # Map an assessment question CSV and export results
 python3 nice_mapper.py --input samples/sample_questions.csv --per-item 3 --output mapped_results.csv
+
+# Run offline self-test and unit tests
+python3 nice_mapper.py --selftest
+python3 -m unittest discover -s tests -v
+```
+
+---
+
+## Engineering Harness & Security Verification
+
+This repository is aligned with the **Antigravity Core Template**:
+- **Agent Rules & Skills**: `.agents/rules/` and `.agents/skills/`
+- **Project Constitutions**: [AGENTS.md](AGENTS.md), [GEMINI.md](GEMINI.md), [HARNESS.md](HARNESS.md)
+- **Release Governance**: [CHANGELOG.md](CHANGELOG.md), [docs/RELEASE_REGISTER.md](docs/RELEASE_REGISTER.md), [docs/UPCOMING_FEATURES.md](docs/UPCOMING_FEATURES.md)
+- **Git Hooks**: `tools/git_hooks/pre-commit` and `tools/git_hooks/pre-push` (linked into `.git/hooks/`)
+
+```bash
+# Pre-commit syntax & TedRedCraft Tier 1 SAST
+python3 -m compileall -q .
+PYTHONPATH=/Users/ted/Development/TedRedCraft python3 -m redcraft audit --mode pre-commit --target .
 ```
 
 ---

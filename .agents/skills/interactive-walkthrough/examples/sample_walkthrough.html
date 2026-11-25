@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Autonomous QA Harness &amp; Execution Walkthrough — Interactive Walkthrough</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<style>
+  :root {
+    --bg: #090d0b;
+    --bg2: #0d1310;
+    --surface: rgba(21, 31, 26, 0.88);
+    --surface2: rgba(26, 38, 32, 0.88);
+    --surface3: rgba(34, 51, 42, 0.90);
+    --line: rgba(255, 255, 255, 0.08);
+    --brand: #0e3f2a;
+    --brand-active: #1b5e3f;
+    --brand-border: #2e7d56;
+    --text: #f0f6f2;
+    --text2: #9bb1a4;
+    --text3: #6c8577;
+    --ok: #2ea043;
+    --warn: #d29922;
+    --err: #f85149;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --radius-capsule: 9999px;
+    --radius-card: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font: 14px/22px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  header.walkthrough-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 32px;
+    background: rgba(9, 13, 11, 0.94);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(16px);
+  }
+
+  .header-title-block { display: flex; flex-direction: column; }
+  .header-title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .header-subtext { font-size: 11px; color: var(--text2); }
+
+  .stepper-pill {
+    display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px;
+    border-radius: var(--radius-capsule); background: var(--surface2); border: 1px solid var(--line);
+    font-size: 12px; font-weight: 600; color: var(--text); user-select: none;
+  }
+
+  .btn-capsule {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    height: 44px; min-height: 44px; padding: 0 18px; border-radius: var(--radius-capsule);
+    border: 1px solid var(--brand-border); background: var(--brand); color: var(--text);
+    font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none;
+    transition: transform 120ms cubic-bezier(0.2, 0, 0, 1), background 150ms ease; user-select: none;
+  }
+  .btn-capsule:active { transform: scale(0.97); }
+  .btn-capsule.secondary { background: var(--surface2); border-color: var(--line); color: var(--text2); }
+  .btn-capsule.secondary:hover { background: var(--surface3); color: var(--text); }
+  .btn-capsule.icon-only { width: 44px; padding: 0; }
+
+  .progress-track { position: absolute; bottom: 0; left: 0; height: 2px; width: 100%; background: var(--line); }
+  .progress-fill { height: 100%; width: 33.333333333333336%; background: var(--ok); transition: width 200ms ease; }
+
+  .walkthrough-grid {
+    display: grid; grid-template-columns: minmax(360px, 1fr) minmax(480px, 1.4fr);
+    gap: 32px; max-width: 1720px; margin: 0 auto; padding: 32px 32px 120px 32px;
+  }
+
+  .story-rail { display: flex; flex-direction: column; padding-bottom: 240px; }
+  .step-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card);
+    padding: 28px; margin-bottom: 32px; transition: border-color 200ms ease, box-shadow 200ms ease; cursor: pointer;
+  }
+  .step-card.is-active {
+    border-color: var(--brand-border); background: rgba(21, 31, 26, 0.98);
+    box-shadow: 0 8px 32px rgba(14, 63, 42, 0.35);
+  }
+
+  .step-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .step-number-badge {
+    padding: 2px 10px; border-radius: var(--radius-capsule); background: rgba(255, 255, 255, 0.08);
+    font-size: 11px; font-weight: 700; color: var(--text); text-transform: uppercase;
+  }
+  .step-badge {
+    padding: 2px 8px; border-radius: var(--radius-capsule); background: rgba(14, 63, 42, 0.4);
+    border: 1px solid rgba(46, 125, 86, 0.6); font-size: 11px; font-weight: 700; color: var(--text);
+  }
+  .step-title { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
+  .step-body { color: var(--text2); font-size: 14px; line-height: 22px; }
+  .inline-code { font-family: var(--mono); font-size: 12px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.06); color: #e6edf3; }
+
+  .callout { display: flex; gap: 12px; padding: 12px 16px; border-radius: 8px; margin: 14px 0; font-size: 13px; line-height: 19px; }
+  .callout-tip { background: rgba(46, 125, 86, 0.15); border: 1px solid rgba(46, 125, 86, 0.4); color: #f0f6f2; }
+  .callout-note { background: rgba(56, 139, 253, 0.12); border: 1px solid rgba(56, 139, 253, 0.35); color: #f0f6f2; }
+
+  .status-pill { padding: 2px 8px; border-radius: var(--radius-capsule); font-size: 11px; font-weight: 700; }
+  .status-pill.status-pass { background: rgba(46, 160, 67, 0.2); color: var(--ok); border: 1px solid rgba(46, 160, 67, 0.4); }
+  .meta-pill { padding: 2px 8px; border-radius: var(--radius-capsule); background: rgba(255,255,255,0.05); font-size: 11px; color: var(--text3); font-family: var(--mono); }
+
+  .subject-pane-container { position: sticky; top: 76px; height: calc(100vh - 100px); }
+  .subject-pane { height: 100%; display: flex; flex-direction: column; background: #080d0b; border: 1px solid var(--line); border-radius: var(--radius-card); overflow: hidden; }
+  .subject-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 18px; background: var(--surface2); border-bottom: 1px solid var(--line); }
+  .subject-title { font-size: 13px; font-weight: 600; color: var(--text); font-family: var(--mono); }
+
+  .code-viewport { flex: 1; overflow-y: auto; font-family: var(--mono); font-size: 13px; line-height: 22px; padding: 16px 0; background: #050807; scroll-behavior: smooth; }
+  .code-line { display: flex; padding: 0 20px 0 16px; min-height: 22px; transition: background 160ms ease, opacity 160ms ease; }
+  .code-line.is-dimmed { opacity: 0.42; }
+  .code-line.is-highlighted { background: rgba(46, 125, 86, 0.24); border-left: 4px solid var(--ok); opacity: 1; }
+  .line-num { width: 44px; user-select: none; color: var(--text3); text-align: right; padding-right: 18px; flex-shrink: 0; }
+  .line-content { color: #e6edf3; white-space: pre-wrap; word-break: break-all; flex: 1; }
+
+  @media (max-width: 1024px) {
+    .walkthrough-grid { grid-template-columns: 1fr; }
+    .subject-pane-container { position: relative; top: 0; height: 480px; margin-bottom: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="walkthrough-header">
+  <div class="header-title-block">
+    <h1 class="header-title">Autonomous QA Harness &amp; Execution Walkthrough</h1>
+    <span class="header-subtext">STAGING &bull; Verdict: PASS</span>
+  </div>
+  <div class="stepper-pill">
+    <span class="material-symbols-outlined" style="font-size: 16px; color: var(--text2);">view_timeline</span>
+    <span id="stepper-label">Step 1 of 3</span>
+  </div>
+  <div style="display: flex; gap: 8px;">
+    <button class="btn-capsule secondary icon-only" id="btn-prev" title="Previous (k / ArrowUp)"><span class="material-symbols-outlined">arrow_upward</span></button>
+    <button class="btn-capsule icon-only" id="btn-next" title="Next (j / ArrowDown)"><span class="material-symbols-outlined">arrow_downward</span></button>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progress-bar"></div></div>
+</header>
+
+<main class="walkthrough-grid">
+  <section class="story-rail"><article class="step-card is-active" data-step-index="1" data-step-id="step-config" data-subject-id="code-config"><div class="step-card-header"><span class="step-number-badge">Step 01</span><span class="step-badge">CONFIG</span><span class="status-pill status-pass">PASS</span><span class="meta-pill">14.2ms</span></div><h3 class="step-title">1. Dynamic Configuration Ingestion</h3><div class="step-body"><p class="step-text">The test suite begins by dynamically resolving endpoints from environment variables or configuration files. Hardcoded base URLs and credentials are strictly prohibited.</p>
+<div class="callout callout-note"><span class="material-symbols-outlined callout-icon">info</span><div class="callout-body">All mutations against production default to blocked unless `--allow-mutation` is explicitly passed.</div></div></div></article>
+<article class="step-card" data-step-index="2" data-step-id="step-actor" data-subject-id="code-actor"><div class="step-card-header"><span class="step-number-badge">Step 02</span><span class="step-badge">ACTOR</span><span class="status-pill status-pass">PASS</span><span class="meta-pill">65.0ms</span></div><h3 class="step-title">2. Multi-Actor Session Provisioning</h3><div class="step-body"><p class="step-text">The harness provisions clean, isolated browser profiles for each operational role (e.g. Administrator, Operator, Trainee):</p>
+<ul class="walkthrough-list">
+<li>Storage state and cookies are strictly segregated.</li>
+<li>Browser tabs communicate via deterministic state assertions.</li>
+</ul></div></article>
+<article class="step-card" data-step-index="3" data-step-id="step-verdict" data-subject-id="telemetry-verdict"><div class="step-card-header"><span class="step-number-badge">Step 03</span><span class="step-badge">VERDICT</span><span class="status-pill status-pass">PASS</span><span class="meta-pill">18.5ms</span></div><h3 class="step-title">3. Affirmative Verdict Serialization</h3><div class="step-body"><p class="step-text">Final affirmative verification confirms:</p>
+<ul class="walkthrough-list">
+<li>All stages completed within SLA budgets.</li>
+<li>Telemetry payload serialized safely into <code class="inline-code">verdict.json</code>.</li>
+<li>Standalone <code class="inline-code">walkthrough.html</code> compiled alongside <code class="inline-code">run-report.md</code>.</li>
+</ul></div></article></section>
+  <aside class="subject-pane-container">
+    <div class="subject-pane">
+      <div class="subject-toolbar">
+        <span class="subject-title" id="subject-title">Dynamic Configuration Resolver</span>
+        <button class="btn-capsule secondary" id="btn-copy" style="height: 32px; padding: 0 12px; font-size: 11px;">Copy</button>
+      </div>
+      <div class="code-viewport" id="code-viewport"><div class="code-line is-highlighted" data-line="1" id="line-1"><span class="line-num">1</span><span class="line-content">def load_config(deployment: str = &quot;staging&quot;) -&gt; dict:</span></div>
+<div class="code-line is-highlighted" data-line="2" id="line-2"><span class="line-num">2</span><span class="line-content">    &quot;&quot;&quot;Dynamically ingests deployment configurations without hardcoded URLs.&quot;&quot;&quot;</span></div>
+<div class="code-line is-highlighted" data-line="3" id="line-3"><span class="line-num">3</span><span class="line-content">    env_cfg = get_environment(deployment)</span></div>
+<div class="code-line is-highlighted" data-line="4" id="line-4"><span class="line-num">4</span><span class="line-content">    return {</span></div>
+<div class="code-line is-highlighted" data-line="5" id="line-5"><span class="line-num">5</span><span class="line-content">        &quot;base_url&quot;: env_cfg[&quot;app_url&quot;],</span></div>
+<div class="code-line is-highlighted" data-line="6" id="line-6"><span class="line-num">6</span><span class="line-content">        &quot;api_url&quot;: env_cfg[&quot;api_url&quot;],</span></div>
+<div class="code-line is-highlighted" data-line="7" id="line-7"><span class="line-num">7</span><span class="line-content">        &quot;allow_mutation&quot;: env_cfg.get(&quot;allow_mutation&quot;, False),</span></div>
+<div class="code-line is-highlighted" data-line="8" id="line-8"><span class="line-num">8</span><span class="line-content">    }</span></div></div>
+    </div>
+  </aside>
+</main>
+
+<script>
+(function() {
+  const SUBJECTS = {"code-config": {"id": "code-config", "type": "code", "title": "Dynamic Configuration Resolver", "language": "python", "line_count": 8, "lines": ["def load_config(deployment: str = \"staging\") -> dict:", "    \"\"\"Dynamically ingests deployment configurations without hardcoded URLs.\"\"\"", "    env_cfg = get_environment(deployment)", "    return {", "        \"base_url\": env_cfg[\"app_url\"],", "        \"api_url\": env_cfg[\"api_url\"],", "        \"allow_mutation\": env_cfg.get(\"allow_mutation\", False),", "    }"]}, "code-actor": {"id": "code-actor", "type": "code", "title": "Multi-Actor Session Pool", "language": "python", "line_count": 10, "lines": ["class ActorPool:", "    \"\"\"Manages isolated browser contexts for multi-role workflows.\"\"\"", "    def __init__(self, browser_context):", "        self.context = browser_context", "        self.actors = {}", "", "    def get_actor(self, role: str) -> \"Actor\":", "        if role not in self.actors:", "            self.actors[role] = Actor(role, self.context.new_page())", "        return self.actors[role]"]}, "telemetry-verdict": {"id": "telemetry-verdict", "type": "code", "title": "Execution Verdict Contract", "language": "json", "line_count": 13, "lines": ["{", "  \"schema_version\": \"1.0.0\",", "  \"test_code\": \"QA-01\",", "  \"deployment\": \"staging\",", "  \"status\": \"PASS\",", "  \"duration_ms\": 1420.5,", "  \"artifacts\": {", "    \"manifest\": \"index.json\",", "    \"verdict\": \"verdict.json\",", "    \"report\": \"run-report.md\",", "    \"walkthrough\": \"walkthrough.html\"", "  }", "}"]}};
+  const STEPS = [{"number": 1, "id": "step-config", "title": "1. Dynamic Configuration Ingestion", "subject_id": "code-config", "highlight_lines": [1, 2, 3, 4, 5, 6, 7, 8], "badge": "CONFIG", "status": "PASS", "latency_ms": 14.2}, {"number": 2, "id": "step-actor", "title": "2. Multi-Actor Session Provisioning", "subject_id": "code-actor", "highlight_lines": [7, 8, 9, 10, 11, 12], "badge": "ACTOR", "status": "PASS", "latency_ms": 65.0}, {"number": 3, "id": "step-verdict", "title": "3. Affirmative Verdict Serialization", "subject_id": "telemetry-verdict", "highlight_lines": [5, 6, 7, 8, 9, 10, 11, 12], "badge": "VERDICT", "status": "PASS", "latency_ms": 18.5}];
+  const TOTAL = STEPS.length;
+  let currentStep = 1;
+
+  const stepperLabel = document.getElementById("stepper-label");
+  const progressBar = document.getElementById("progress-bar");
+  const subjectTitle = document.getElementById("subject-title");
+  const codeViewport = document.getElementById("code-viewport");
+  const btnPrev = document.getElementById("btn-prev");
+  const btnNext = document.getElementById("btn-next");
+  const btnCopy = document.getElementById("btn-copy");
+  const stepCards = document.querySelectorAll(".step-card");
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function activateStep(stepNum) {
+    if (stepNum < 1 || stepNum > TOTAL) return;
+    currentStep = stepNum;
+    const stepData = STEPS[stepNum - 1];
+    if (!stepData) return;
+
+    stepperLabel.textContent = `Step ${stepNum} of ${TOTAL}`;
+    progressBar.style.width = `${(stepNum / TOTAL) * 100}%`;
+
+    stepCards.forEach((c, idx) => {
+      if (idx + 1 === stepNum) c.classList.add("is-active");
+      else c.classList.remove("is-active");
+    });
+
+    const subj = SUBJECTS[stepData.subject_id] || Object.values(SUBJECTS)[0];
+    if (subj) {
+      subjectTitle.textContent = subj.title;
+      const hlSet = new Set(stepData.highlight_lines || []);
+      codeViewport.replaceChildren();
+      const frag = document.createDocumentFragment();
+      subj.lines.forEach((txt, i) => {
+        const ln = i + 1;
+        const isHl = hlSet.has(ln);
+        const cl = isHl ? " is-highlighted" : (hlSet.size > 0 ? " is-dimmed" : "");
+        const div = document.createElement("div");
+        div.className = `code-line${cl}`;
+        div.dataset.line = String(ln);
+        div.id = `line-${ln}`;
+        const sNum = document.createElement("span");
+        sNum.className = "line-num";
+        sNum.textContent = String(ln);
+        const sContent = document.createElement("span");
+        sContent.className = "line-content";
+        sContent.textContent = txt || " ";
+        div.appendChild(sNum);
+        div.appendChild(sContent);
+        frag.appendChild(div);
+      });
+      codeViewport.appendChild(frag);
+
+      if (stepData.highlight_lines && stepData.highlight_lines.length > 0) {
+        const target = document.getElementById(`line-${Math.min(...stepData.highlight_lines)}`);
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else {
+        codeViewport.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const num = parseInt(e.target.getAttribute("data-step-index"), 10);
+        if (num && num !== currentStep) activateStep(num);
+      }
+    });
+  }, { rootMargin: "-20% 0px -40% 0px", threshold: 0.1 });
+
+  stepCards.forEach(c => observer.observe(c));
+  stepCards.forEach((c, idx) => c.addEventListener("click", () => {
+    activateStep(idx + 1);
+    c.scrollIntoView({ behavior: "smooth", block: "center" });
+  }));
+
+  btnPrev.addEventListener("click", () => {
+    if (currentStep > 1) {
+      stepCards[currentStep - 2].scrollIntoView({ behavior: "smooth", block: "center" });
+      activateStep(currentStep - 1);
+    }
+  });
+
+  btnNext.addEventListener("click", () => {
+    if (currentStep < TOTAL) {
+      stepCards[currentStep].scrollIntoView({ behavior: "smooth", block: "center" });
+      activateStep(currentStep + 1);
+    }
+  });
+
+  window.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+    if (e.key === "ArrowDown" || e.key === "j") { e.preventDefault(); btnNext.click(); }
+    else if (e.key === "ArrowUp" || e.key === "k") { e.preventDefault(); btnPrev.click(); }
+  });
+
+  btnCopy.addEventListener("click", () => {
+    const subj = SUBJECTS[STEPS[currentStep - 1]?.subject_id] || Object.values(SUBJECTS)[0];
+    if (subj) navigator.clipboard.writeText(subj.lines.join("\n")).then(() => {
+      btnCopy.textContent = "Copied!";
+      setTimeout(() => { btnCopy.textContent = "Copy"; }, 1600);
+    });
+  });
+})();
+</script>
+</body>
+</html>

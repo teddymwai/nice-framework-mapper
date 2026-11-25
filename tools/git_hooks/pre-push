@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Antigravity Core Template - Pre-Push Verification Hook (<4s execution)
+set -eo pipefail
+
+PY_BIN="python3"
+if command -v python3.13 >/dev/null 2>&1; then
+  PY_BIN="python3.13"
+elif command -v python3.12 >/dev/null 2>&1; then
+  PY_BIN="python3.12"
+fi
+
+echo "==> [Antigravity Pre-Push] Verifying compilation syntax..."
+$PY_BIN -m compileall -q .
+
+# Resolve TedRedCraft security engine (local clone or module)
+REDCRAFT_DIR="/Users/ted/Development/TedRedCraft"
+if $PY_BIN -m redcraft --help >/dev/null 2>&1; then
+  echo "==> [RedCraft Tier 2] Running full SAST, Loopback DAST & Adversarial Verification..."
+  $PY_BIN -m redcraft audit --mode pre-push --target .
+  echo "==> [RedCraft Tier 2] Security gate PASSED."
+elif [[ -d "$REDCRAFT_DIR" && -f "$REDCRAFT_DIR/redcraft/cli.py" ]]; then
+  echo "==> [RedCraft Tier 2] Running full SAST & Loopback DAST via $REDCRAFT_DIR..."
+  PYTHONPATH="$REDCRAFT_DIR" $PY_BIN -m redcraft audit --mode pre-push --target .
+  echo "==> [RedCraft Tier 2] Security gate PASSED."
+else
+  echo "[i] TedRedCraft security engine not found locally."
+  echo "    To enable automated Tier 2 pre-push gates, clone the private repository:"
+  echo "    git clone https://github.com/teddymwai/TedRedCraft /Users/ted/Development/TedRedCraft"
+fi
