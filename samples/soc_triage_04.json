@@ -1,0 +1,5 @@
+{
+  "scenario_id": "soc-triage-04",
+  "tags": ["siem", "pcap-analysis", "lateral-movement"],
+  "milestones": ["identify-c2-beacon", "isolate-compromised-host"]
+}
