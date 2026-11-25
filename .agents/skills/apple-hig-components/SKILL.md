@@ -1,6 +1,6 @@
 ---
 name: apple-hig-components
-description: Design, build, and audit UI buttons and action controls following the Apple Human Interface Guidelines (HIG) and modular HIG Components architecture. Use when the user asks to create, style, review, or refactor buttons, action bars, CTAs, or interactive controls with Apple HIG aesthetics, Liquid Glass materials, or Apple component standards across web, iOS, iPadOS, macOS, visionOS, or CYBER RANGES interfaces.
+description: Design, build, and audit UI buttons and action controls following the Apple Human Interface Guidelines (HIG) and modular HIG Components architecture. Use when the user asks to create, style, review, or refactor buttons, action bars, CTAs, or interactive controls with Apple HIG aesthetics, Liquid Glass materials, or Apple component standards across web, iOS, iPadOS, macOS, visionOS, or TedCraft / Edulis interfaces.
 ---
 # Apple HIG Buttons and Modular Component Architecture
 
@@ -66,13 +66,13 @@ Map every button to one of four system roles:
   6. `Disabled / Unavailable` (reduced opacity `0.4` to `0.5`, pointer events disabled, cursor default)
 - **Inline Activity Indicator for Delayed Actions**: When an action takes noticeable time to complete, replace the leading icon with a spinning activity indicator inside the button and update the verb to its progressive participle with an ellipsis (for example, `Checkout` becomes `Checking out...`) while locking out duplicate clicks.
 
-### 5. Apply Material, Contrast, and CYBER RANGES Brand Adaptation
+### 5. Apply Material, Contrast, and TedCraft / Edulis Brand Adaptation
 
 - **Liquid Glass and Translucent Surfaces**:
   - Over rich or colorful backgrounds, enclose buttons in a translucent material shape (`backdrop-filter: blur(20px) saturate(180%)`) or monochromatic high-contrast fill so labels never blend into underlying content.
   - On glass windows, use a thin translucent material (`rgba(255, 255, 255, 0.14)`) for inline buttons; for floating spatial bars or corner toolbars, use full Liquid Glass specular borders and backdrop blur.
-- **CYBER RANGES UI Profile**: When building or auditing **CYBER RANGES** interfaces:
-  - Use base color `rgba(14, 63, 42, 1.00)` (`#0E3F2A`) for `Primary` prominent button fills with crisp white (`#FFFFFF`) typography (`>= 4.5:1` WCAG contrast).
+- **TedCraft / Edulis UI Profile**: When building or auditing **TedCraft / Edulis** interfaces:
+  - Use Champagne Gold `#d4a853` (`#0c0c0e` ink) in Dark Obsidian mode and Deep Bronze-Gold `#8c6218` (`#fdfbf7` ink) in Warm Ivory light mode for `Primary` prominent button fills (`>= 4.5:1` WCAG contrast).
   - Use zero emojis anywhere in button labels or UI chrome.
   - Use **Google Fonts Icons (Material Symbols)** on web in place of SF Symbols, scaled proportionally with text and aligned to the optical center.
 

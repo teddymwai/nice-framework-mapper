@@ -47,7 +47,7 @@ Before declaring any dashboard complete, verify all 7 capabilities:
 - [ ] **7. Resilient `file://` Offline Preview & UI Craft**:
   - Synchronous event listener registration before network calls; graceful offline preview banner + sample catalog when opened via `file://`.
   - Studio Curve (`img001.jpg`) composite canvas (`rgba(9, 13, 11, 0.86..0.94)` over fixed `/backgrounds/img001.jpg` with `file://` fallback; no theme selector dropdown).
-  - Position-aware `TooltipManager` (WCAG 1.4.13, `<kbd>Escape</kbd>` dismiss, viewport clamping) and copy-pasteable CLI quick-reference footer.
+  - Position-aware, auto-hiding `TooltipManager` (WCAG 1.4.13, `visibility: hidden` when inactive, `<kbd>Escape</kbd>`/`scroll`/`pointerdown`/`4000ms` auto-hide, viewport clamping), copy-pasteable CLI quick-reference footer, and canonical attribution (`Copyright © 2026 Ted Mwai · TedCraft, a publication of Edulis Secure Systems Hub Limited`) with Apple HIG capsule links for GitHub, LinkedIn, and GitLab.
 
 ---
 

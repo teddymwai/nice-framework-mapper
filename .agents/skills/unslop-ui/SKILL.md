@@ -1,11 +1,11 @@
 ---
 name: unslop-ui
-description: Audit, redesign, and refactor front-end UI (dashboards, operator panels, reports, blog pages, generated HTML) against the internal CYBER RANGES UI Mantra. Runs the 9-pass redline (Spacing, Color, Icons, Copy, Typography, Layout, Details, Visuals, Motion) to strip generic AI-generated aesthetics and enforce quiet chrome, one bright focal element, strict 4px rhythm, zero emojis, and Apple HIG control ergonomics. Use when the user asks to unslop, clean up, polish, review, or restyle an interface.
+description: Audit, redesign, and refactor front-end UI (dashboards, operator panels, reports, blog pages, generated HTML) against the internal TedCraft / Edulis UI Mantra. Runs the 9-pass redline (Spacing, Color, Icons, Copy, Typography, Layout, Details, Visuals, Motion) to strip generic AI-generated aesthetics and enforce quiet chrome, one bright focal element, strict 4px rhythm, zero emojis, and Apple HIG control ergonomics. Use when the user asks to unslop, clean up, polish, review, or restyle an interface.
 ---
 
-# Unslop UI: CYBER RANGES 9-Pass Redline
+# Unslop UI: TedCraft / Edulis 9-Pass Redline
 
-Internal methodology for converging any interface onto the CYBER RANGES UI Mantra. Canonical spec: `.agents/rules/03-ui-unslop-and-apple-hig.md`; default tokens: `references/design-tokens.md`. Once a project grows a `docs/ui-mantra/` tree, point this line at `docs/ui-mantra/03-ui-unslop-methodology.md`. Control-level geometry is delegated to the `apple-hig-components` skill (where present).
+Internal methodology for converging any interface onto the TedCraft / Edulis UI Mantra. Canonical spec: `.agents/rules/03-ui-unslop-and-apple-hig.md`; default tokens: `references/design-tokens.md`. Control-level geometry is delegated to the `apple-hig-components` skill (where present).
 
 ## When to Use
 
@@ -15,7 +15,7 @@ Internal methodology for converging any interface onto the CYBER RANGES UI Mantr
 
 ## Inputs to Resolve First (never assume)
 
-1. **Palette & type tokens** — ingest them from the project's always-on rule (`.agents/rules/ui-mantra-architecture.md` or equivalent). Do not import tokens from another project. Template defaults live in `references/design-tokens.md` (emerald `#1b5e3f` focal accent on graphite `#0d1310`, surface `#151f1a`, text `#f0f6f2` / `#9bb1a4`).
+1. **Palette & type tokens** — ingest them from `.agents/rules/03-ui-unslop-and-apple-hig.md` (or the project's always-on UI rule). Template defaults live in `references/design-tokens.md`: Dual-mode **Deep Obsidian (`#0c0c0e`) + Champagne Gold (`#d4a853`)** dark default and **Warm Ivory (`#f8f6f1`) + Deep Bronze-Gold (`#8c6218`)** light reading mode, paired with `Newsreader` serif display/editorial headings, `Instrument Sans` UI/body, and `JetBrains Mono` telemetry.
 2. **Focal element** — name the single thing on the view that deserves visual weight. If you cannot name it, the layout pass is not done.
 3. **Surface type** — operator tool, report, marketing/editorial page. Density targets differ; rhythm rules do not.
 
@@ -53,4 +53,4 @@ Each pass is completed and re-rendered before the next starts. Later passes must
 
 - Ship the result as plain production code in the project's own stack (CSS variables / Tailwind tokens / Astro components). No presentation-only classes or demo scaffolding.
 - Inline comments may tag the pass that motivated a non-obvious decision (e.g. `/* Pass 5: tabular figures */`).
-- Never add external author handles, third-party repository links, or attribution footers. Cite internal paths only.
+- Never add third-party external author handles, third-party repository links, or `legacy/` vendored paths. Cite internal paths only, and include the canonical TedCraft / Edulis Secure Systems Hub Limited attribution footer (`Copyright © 2026 Ted Mwai · TedCraft, a publication of Edulis Secure Systems Hub Limited`) with Apple HIG capsule links to GitHub, LinkedIn, and GitLab on rendered web surfaces.

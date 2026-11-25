@@ -27,10 +27,11 @@
 
 Every front-end view, dashboard, or report component must follow these strict guidelines:
 
-### A. Color Palette & Craft Hierarchy
-- Ground the interface in a deep, executive base tone (e.g., dark-mode charcoal `#0d1310` or enterprise slate `#0f172a`).
-- Text readability must be razor sharp (high-contrast off-whites `#f0f6f2` for primary body copy, `#9bb1a4` for secondary metadata).
-- Single focal point: Reserve bright accent colors for primary call-to-actions and real-time status gauges. Ban gratuitous gradients, rainbow borders, and neon mesh backgrounds.
+### A. Color Palette, Typography & Craft Hierarchy
+- Ground every interface in the **TedCraft / Edulis Dual-Mode Palette**: Deep Obsidian (`#0c0c0e` / `#151518`) with Champagne Gold (`#d4a853`) as the dark default, and Warm Ivory Parchment (`#f8f6f1` / `#fdfbf7`) with Deep Bronze-Gold (`#8c6218`) for light reading mode.
+- Text readability must be razor sharp across three strict roles (`#efe9de` / `#aaa398` / `#8a847a` in dark mode; `#1f1b16` / `#5e554a` / `#7b7266` in light mode).
+- Pair `Newsreader` (optical serif, weights `400`–`500`, `-0.025em` tracking) for display/editorial headings with `Instrument Sans` for UI/body prose and `JetBrains Mono` (`tabular-nums`) for telemetry and code.
+- Single focal point: Reserve Champagne Gold / Deep Bronze-Gold for primary call-to-actions and the primary focal metric. Ban gratuitous gradients, rainbow borders, and neon mesh backgrounds.
 
 ### B. Iconography & Zero "AI-Slop"
 - **Strictly No Emojis**: Never use emojis (no 🚀, ✨, 🔥, 🤖, ✅) in UI buttons, tables, badges, or headers.
